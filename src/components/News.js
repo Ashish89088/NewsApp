@@ -8,12 +8,14 @@ export default class News extends Component {
   static defaultProps = {
     country: "in",
     pageSize: 10,
-    category: "general"
+    category: "general",
+    title: "Top Headlines"
   }
 
   static propTypes = {
     country: PropTypes.string,
-    pageSize: PropTypes.number
+    pageSize: PropTypes.number,
+    title: PropTypes.string
   }
 
   // Constructor is used to define state in Class Based Component
@@ -75,7 +77,7 @@ export default class News extends Component {
   render() {
     return (
       <div className="container my-3">
-        <h1 className="text-center">NewsMonkey - Top Headlines</h1>
+        <h1 className="text-center">NewsMonkey - {this.props.title}</h1>
         {this.state.loading && <Spinner/>}
         <div className="row">
           {!this.state.loading && this.state.articles.map((element) => {
@@ -88,6 +90,9 @@ export default class News extends Component {
                   }
                   imgUrl={element.urlToImage}
                   newsUrl={element.url}
+                  author={element.author}
+                  date={element.publishedAt}
+                  source={element.source.name}
                 />
               </div>
             );
