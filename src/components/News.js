@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import NewsItem from "./NewsItem";
 import Spinner from "./Spinner";
 import PropTypes from 'prop-types'
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export default class News extends Component {
 
@@ -18,69 +19,76 @@ export default class News extends Component {
     title: PropTypes.string
   }
 
+  capitalize = (string)=>{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
   // Constructor is used to define state in Class Based Component
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       articles: [],
-      loading: false,
+      loading: true,
       page: 1,
+      totalResults: 0
     };
+    document.title = `${this.capitalize(this.props.category)} - NewsMonkey`
   }
 
-  async componentDidMount() {
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=4921c1f185e441ccbacc1f58801e06b2&page=1&pageSize=${this.props.pageSize}`;
-    this.setState({loading:true});
+  async updateNews(){
+    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=145929f30227468b91c8e31bfc4191cd&page=${this.state.page}&pageSize=${this.props.pageSize}`;
     let data = await fetch(url);
     let parseData = await data.json();
     this.setState({
-      articles: parseData.articles,
-      totArticles: parseData.totalResults,
-      loading: false
-    });
-  }
-
-  handlePrevClick = async ()=>{
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=4921c1f185e441ccbacc1f58801e06b2&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`;
-    this.setState({loading:true});
-    let data = await fetch(url);
-    let parseData = await data.json();
-
-    this.setState({
-      page: this.state.page - 1,
       articles: parseData.articles,
       totArticles: parseData.totalResults,
       loading: false
     })
+}
+
+  async componentDidMount() {
+    this.updateNews();
+  }
+
+  handlePrevClick = async ()=>{
+    this.setState({page: this.state.page - 1});
+    this.updateNews();
   }
   
   handleNextClick = async ()=>{
-    if(this.state.page + 1 > Math.ceil(this.state.totArticles/this.props.pageSize)){
-      
+    this.setState({page: this.state.page + 1})
+    this.updateNews();
     }
-    else{
-      let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=4921c1f185e441ccbacc1f58801e06b2&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
+
+    fetchMoreData = async () => {
+      this.setState({page :this.state.page + 1})
+      const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=145929f30227468b91c8e31bfc4191cd&page=${this.state.page}&pageSize=${this.props.pageSize}`;
       this.setState({loading:true});
       let data = await fetch(url);
       let parseData = await data.json();
-      console.log(parseData);
-      
       this.setState({
-        page: this.state.page + 1,
-        articles: parseData.articles,
-        totArticles: parseData.totalResults,
-        loading: false
-      })
-    }
-    }
+      articles: this.state.articles.concat(parseData.articles),
+      totArticles: parseData.totalResults,
+      loading: false
+    })
+    };
     
   render() {
     return (
+      <>
       <div className="container my-3">
         <h1 className="text-center">NewsMonkey - {this.props.title}</h1>
+
         {this.state.loading && <Spinner/>}
+
+        <InfiniteScroll
+          dataLength={this.state.articles.length}
+          next={this.fetchMoreData}
+          hasMore={this.state.articles.length !== this.state.totalResults}
+          loader={<Spinner/>}
+        >
+          <div className="container">
         <div className="row">
-          {!this.state.loading && this.state.articles.map((element) => {
+          {this.state.articles.map((element) => {
             return (
               <div className="col-md-4" key={element.url}>
                 <NewsItem
@@ -97,22 +105,11 @@ export default class News extends Component {
               </div>
             );
           })}
-          <div className="container d-flex justify-content-between">
-            <button
-              className="btn btn-dark"
-              onClick={this.handlePrevClick}
-              type="button"
-              disabled={this.state.page<=1}
-            >
-              {" "}
-              &larr; Previous
-            </button>
-            <button className="btn btn-dark" onClick={this.handleNextClick} type="button" disabled={this.state.page + 1 > Math.ceil(this.state.totArticles/this.props.pageSize)}>
-              Next &rarr;
-            </button>
           </div>
+          </div>
+          </InfiniteScroll>
         </div>
-      </div>
+        </>
     );
   }
 }
