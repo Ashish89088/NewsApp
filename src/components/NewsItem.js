@@ -15,16 +15,17 @@ export class NewsItem extends Component {
             }
             className="card-img-top"
             alt="NewsImage"
+            style={{height: "250px"}}
           />
-          <div className="card-body">
-            <h5 className="card-title">
+          <div className="card-body" style={{height: "290px"}}>
+            <h5 className="card-title" style={{height: "55px"}}>
               {title}
               <span class="position-absolute top-0 translate-middle badge rounded-pill bg-danger" style={{left: '90%', zIndex:1}}>
                 {source}
               </span>
             </h5>
-            <p className="card-text">{description}...</p>
-            <p className="card-text">
+            <p className="card-text" style={{height: "70px"}}>{description}...</p>
+            <p className="card-text" style={{height: "55px"}}>
               <small className="text-muted">
                 By {!author ? "Unknown" : author} on{" "}
                 {new Date(date).toGMTString()}
