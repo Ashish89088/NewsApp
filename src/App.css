@@ -2,6 +2,22 @@
   text-align: center;
 }
 
+body::-webkit-scrollbar {
+  width: 20px;
+  background-color: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+  /* background: #5cb85c; */
+  background: linear-gradient(to bottom , #292b2c 50% ,#5cb85c);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom , #5d6061 50% ,  #85dd85);
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

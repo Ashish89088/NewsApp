@@ -76,7 +76,7 @@ export default class News extends Component {
     return (
       <>
       <div className="container my-3">
-        <h1 className="text-center">NewsMonkey - {this.props.title}</h1>
+        <h1 className="text-center my-3">NewsMonkey - <span className="text-success">{this.props.title}</span></h1>
 
         {this.state.loading && <Spinner/>}
 
