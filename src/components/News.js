@@ -19,6 +19,12 @@ export default class News extends Component {
     title: PropTypes.string
   }
 
+  get hasMore() {
+    console.log('this.state.articles.length', this.state.articles.length)
+    console.log('this.state.totalResults', this.state.totalResults)
+    return this.state.articles.length !== this.state.totalResults
+  }
+
   capitalize = (string)=>{
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
@@ -40,7 +46,7 @@ export default class News extends Component {
     let parseData = await data.json();
     this.setState({
       articles: parseData.articles,
-      totArticles: parseData.totalResults,
+      totalResults: parseData.totalResults,
       loading: false
     })
 }
@@ -66,11 +72,12 @@ export default class News extends Component {
       let data = await fetch(url);
       let parseData = await data.json();
       this.setState({
-      articles: this.state.articles.concat(parseData.articles),
-      totArticles: parseData.totalResults,
-      loading: false
-    })
+        articles: this.state.articles.concat(parseData.articles),
+        totArticles: parseData.totalResults,
+        loading: false
+      })
     };
+
     
   render() {
     return (
@@ -83,7 +90,7 @@ export default class News extends Component {
         <InfiniteScroll
           dataLength={this.state.articles.length}
           next={this.fetchMoreData}
-          hasMore={this.state.articles.length !== this.state.totalResults}
+          hasMore={this.hasMore}
           loader={<Spinner/>}
         >
           <div className="container">
